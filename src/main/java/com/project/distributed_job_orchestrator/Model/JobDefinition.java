@@ -1,6 +1,7 @@
 package com.project.distributed_job_orchestrator.Model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NonNull;
 import org.springframework.validation.annotation.Validated;
@@ -11,7 +12,7 @@ import java.util.List;
 
 // Data is lombook annotation that automaticcaly add the getter, setter, hasCode, toString, All Arg Costructor
 @Data
-@Validated
+// @Validated // Its meant for @Service/@Controller to enable method-level parameter validation
 // Entity is persistance API anotation that is used for table creation using Spring persistance API
 @Entity(name = "job_definition")
 public class JobDefinition {
@@ -23,20 +24,19 @@ public class JobDefinition {
     @OneToMany(mappedBy = "jobDefinition")
     private List<JobInstances> instances;
 
-    @NonNull
+    @Column(nullable = false)
     private String name;
 
     private String category;
 
-    @NonNull
+    @Column(nullable = false)
     private String cronSchedule;
 
-    @NonNull
+    @Column(nullable = false)
     private String handleEndpoint;
     private Integer timeout;
     private Integer maxAttempts;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-
 
 }
