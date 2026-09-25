@@ -8,6 +8,8 @@ import com.project.distributed_job_orchestrator.Repository.JobInstanceRepository
 import com.project.distributed_job_orchestrator.webApi.SubmitJobInstanceRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.support.CronExpression;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -52,6 +54,7 @@ public class JobInstanceService {
             jobInstances.setStatus(Status.PENDING);
             jobInstances.setJobDefinition(jobDefinitionRepository.findById(request.getJobDefinitionId()).orElseThrow(() -> new NoSuchElementException("No job definition with id " + request.getJobDefinitionId())));
             jobInstances.setAttemptCount(0);
+            jobInstances.setScheduledAt(nextScheduleTime(request.getJobDefinitionId()));
 
 //            jobInstanceRepository.save(jobInstances);
 //        }
@@ -63,6 +66,16 @@ public class JobInstanceService {
         } catch (DataIntegrityViolationException e){
             return jobInstanceRepository.findByIdempotencyKey(request.getIdempotencyKey()).orElseThrow(() -> new RuntimeException(e));
         }
+
+    }
+
+    private LocalDateTime nextScheduleTime(Long id){
+        JobDefinition jobDefinition = jobDefinitionRepository.findById(id).orElseThrow(() -> new RuntimeException("Id Not found"));
+        String cron = jobDefinition.getCronSchedule();
+        CronExpression cronExpression = CronExpression.parse(cron);
+        return cronExpression.next(LocalDateTime.now());
+
+        // Add all the scheduled for next one day
 
     }
 }

@@ -64,6 +64,7 @@ public class JobController {
     @PostMapping("/job/submit")
     public ResponseEntity<String> submitJobInstance(@RequestBody SubmitJobInstanceRequest request){
         Optional<JobInstances> existingJobInstances = jobInstanceService.findInstancesByIdempotencyKey(request.getIdempotencyKey());
+        // Need to handle the concurrency for this if condition
         if(existingJobInstances.isPresent()){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Job Instance already present");
         }
