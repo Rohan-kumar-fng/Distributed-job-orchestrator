@@ -38,5 +38,6 @@ public class JobDefinition {
     private Integer maxAttempts;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private  Integer retryTimeInterval;
 
 }
